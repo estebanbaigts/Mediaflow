@@ -127,7 +127,7 @@ enum Format {
     Csv,
 }
 
-/// Must match `identifier` in app/src-tauri/tauri.conf.json: the desktop app
+/// Must match `identifier` in apps/desktop/src-tauri/tauri.conf.json: the desktop app
 /// keeps its library in Tauri's `app_data_dir()`, which is the platform data
 /// folder joined with this identifier. Sharing it means imports made from
 /// the command line show up in the app and count as verified copies there.

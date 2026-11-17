@@ -27,7 +27,7 @@ Fields: `version`, `updated_at`, `current` (running import: project, state,
 fraction, bytes, ETA, current file), `last` (last finished import and whether
 it is fully verified), `attention`, `destinations` (label, connected, free
 space). No file contents. The contract is pinned by
-`app/macos-widget/Fixtures/status-v1.json`, decoded by both the Rust tests and
+`apps/macos-widget/Fixtures/status-v1.json`, decoded by both the Rust tests and
 the Swift tests.
 
 The widget never shows a stale snapshot as live progress: if an import's

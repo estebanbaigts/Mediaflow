@@ -42,7 +42,7 @@ attempted).
                 │ Tauri IPC (capability "main": 18 app   │ events: import-progress,
                 │ commands + event listen, nothing else)│ import-finished, plan-progress
 ┌───────────────▼──────────────────────────────────────┴────────────────────────┐
-│ app/src-tauri  (commands.rs)                                                  │
+│ apps/desktop/src-tauri  (commands.rs)                                         │
 │   • native folder picker → Engine::authorize → grant id                       │
 │   • plans kept in memory by id; sessions run on worker threads                │
 └───────────────┬───────────────────────────────────────────────────────────────┘

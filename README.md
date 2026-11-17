@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="app/assets/icon.png" width="96" alt="MediaFlow icon">
+<img src="apps/desktop/assets/icon.png" width="96" alt="MediaFlow icon">
 
 # MediaFlow
 
@@ -109,7 +109,7 @@ You need [Rust](https://rustup.rs) 1.89+ and [Node.js](https://nodejs.org) 22.
 
 ```sh
 git clone https://github.com/estebanbaigts/Mediaflow-.git && cd Mediaflow-
-cd app && npm ci
+cd apps/desktop && npm ci
 npx tauri dev          # run the app in development
 npx tauri build        # installers in target/release/bundle/
 ```
@@ -122,7 +122,7 @@ npx tauri build        # installers in target/release/bundle/
 
 Command line only: `cargo build --release -p mediaflow-cli` → `target/release/mediaflow`.
 
-Tests: `cargo test --workspace --exclude mediaflow-app` and `cd app && npm test`.
+Tests: `cargo test --workspace --exclude mediaflow-app` and `cd apps/desktop && npm test`.
 
 ## Documentation
 

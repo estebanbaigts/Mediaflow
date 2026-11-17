@@ -8,8 +8,8 @@ Run everything:
 
 ```sh
 cargo test --workspace --exclude mediaflow-app   # engine + CLI (Rust)
-cd app && npm ci && npm test                     # UI
-cd app && npx tsc --noEmit                       # types
+cd apps/desktop && npm ci && npm test                     # UI
+cd apps/desktop && npx tsc --noEmit                       # types
 cargo clippy --all-targets && cargo fmt --check
 ```
 
@@ -59,7 +59,7 @@ mode never claims complete · disconnected ≠ missing · corrupted copy.
 it with SIGKILL mid-import, resumes from a new process, checks every byte, no
 duplicates, no temp files, `interrupted` journaled.
 
-### UI (app/src/test, 8, Vitest + Testing Library, mocked bridge)
+### UI (apps/desktop/src/test, 8, Vitest + Testing Library, mocked bridge)
 Keyboard navigation and shortcuts · full import flow (no path ever sent to
 the backend, conflict/exclusion tabs, real progress, no fake ETA,
 `completed_with_errors` never shown as success) · start blocked on

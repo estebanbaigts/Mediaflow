@@ -28,21 +28,21 @@ command -v xcodegen >/dev/null || { echo "Install XcodeGen first: brew install x
 echo "==> Desktop app"
 if [[ "$UNIVERSAL" == "1" ]]; then
   rustup target add aarch64-apple-darwin x86_64-apple-darwin
-  (cd app && npm ci && npx tauri build --bundles app --target universal-apple-darwin)
+  (cd apps/desktop && npm ci && npx tauri build --bundles app --target universal-apple-darwin)
   APP="$ROOT/target/universal-apple-darwin/release/bundle/macos/MediaFlow.app"
   WIDGET_ARCHS=(ARCHS="arm64 x86_64" ONLY_ACTIVE_ARCH=NO)
 else
-  (cd app && npm ci && npx tauri build --bundles app)
+  (cd apps/desktop && npm ci && npx tauri build --bundles app)
   APP="$ROOT/target/release/bundle/macos/MediaFlow.app"
   WIDGET_ARCHS=()
 fi
 [[ -d "$APP" ]] || { echo "app bundle not found: $APP" >&2; exit 1; }
 
 echo "==> Widget extension"
-(cd app/macos-widget && xcodegen generate --quiet)
+(cd apps/macos-widget && xcodegen generate --quiet)
 EXTRA=()
 if [[ -n "${TEAM_ID:-}" ]]; then EXTRA+=(DEVELOPMENT_TEAM="$TEAM_ID"); fi
-xcodebuild -quiet -project app/macos-widget/MediaFlowWidget.xcodeproj -scheme MediaFlowWidget \
+xcodebuild -quiet -project apps/macos-widget/MediaFlowWidget.xcodeproj -scheme MediaFlowWidget \
   -configuration Release -derivedDataPath "$ROOT/target/widget" \
   CODE_SIGNING_ALLOWED=NO ${EXTRA[@]+"${EXTRA[@]}"} ${WIDGET_ARCHS[@]+"${WIDGET_ARCHS[@]}"} build
 APPEX="$ROOT/target/widget/Build/Products/Release/MediaFlowWidget.appex"
@@ -53,7 +53,7 @@ rm -rf "$APP/Contents/PlugIns/MediaFlowWidget.appex"
 cp -R "$APPEX" "$APP/Contents/PlugIns/"
 # Inner code first, then the app.
 codesign --force --options runtime "$TIMESTAMP" -s "$IDENTITY" \
-  --entitlements app/macos-widget/Widget/MediaFlowWidget.entitlements \
+  --entitlements apps/macos-widget/Widget/MediaFlowWidget.entitlements \
   "$APP/Contents/PlugIns/MediaFlowWidget.appex"
 codesign --force --options runtime "$TIMESTAMP" -s "$IDENTITY" "$APP"
 codesign --verify --deep --strict "$APP"

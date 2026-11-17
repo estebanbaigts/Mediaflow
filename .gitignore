@@ -1,11 +1,11 @@
 /target
 node_modules/
-/app/dist
-/app/src-tauri/target
-/app/src-tauri/gen
+/apps/desktop/dist
+/apps/desktop/src-tauri/target
+/apps/desktop/src-tauri/gen
 *.sqlite
 *.lock.tmp
 .DS_Store
-/app/macos-widget/*.xcodeproj
-/app/macos-widget/build
-/app/macos-widget/StatusKit/.build
+/apps/macos-widget/*.xcodeproj
+/apps/macos-widget/build
+/apps/macos-widget/StatusKit/.build

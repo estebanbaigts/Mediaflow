@@ -98,7 +98,7 @@ public enum Format {
 }
 
 /// Where the app writes the snapshot: the App Group container shared with
-/// the widget. Keep in sync with `APP_GROUP` in app/src-tauri/src/native.rs.
+/// the widget. Keep in sync with `APP_GROUP` in apps/desktop/src-tauri/src/native.rs.
 public enum StatusLocation {
     public static let appGroup = "group.org.mediaflow.app"
     public static let fileName = "status.json"

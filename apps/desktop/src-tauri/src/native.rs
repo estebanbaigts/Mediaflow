@@ -21,7 +21,7 @@ use tauri::window::{ProgressBarState, ProgressBarStatus};
 use tauri::{AppHandle, Emitter, Manager};
 use tauri_plugin_notification::NotificationExt;
 
-/// App Group shared with the macOS widget extension (see `macos-widget/`).
+/// App Group shared with the macOS widget extension (see `apps/macos-widget/`).
 /// Must match the `com.apple.security.application-groups` entitlement of
 /// both targets when the app is signed.
 #[cfg_attr(not(target_os = "macos"), allow(dead_code))]

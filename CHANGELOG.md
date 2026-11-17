@@ -24,6 +24,9 @@ follow SemVer.
   end-to-end test.
 
 ### Changed
+- Repository layout: the desktop app moved from `app/` to `apps/desktop/`
+  and the macOS widget to `apps/macos-widget/`; layout and branch naming
+  are described in `CONTRIBUTING.md`.
 - The CLI now uses the desktop app's library (`org.mediaflow.app` in the
   platform data folder), so command-line imports appear in the app. An
   earlier CLI library is left in place and pointed out once.
