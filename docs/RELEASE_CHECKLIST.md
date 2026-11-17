@@ -19,7 +19,7 @@ than ticking something that was not actually run.
 - [ ] `npm audit --omit=dev` clean
 - [ ] Capability file still lists only the intended commands; no plugin permission added for the web view
 - [ ] CSP unchanged or reviewed
-- [ ] macOS build signed and notarized; Windows installer signed
+- [ ] macOS build universal, signed and notarized ([procedure](MACOS_RELEASE.md)); Windows installer signed
 - [ ] SHA-256 checksums of release artifacts published
 
 ## Publishing

@@ -28,7 +28,7 @@ any deletion/cleanup feature.
 | 9 | Resume without false completion | ✅ | crash/kill tests |
 | 10 | Permissions enforced in the engine | ✅ | grants re-checked at execution, security tests |
 | 11 | Critical tests pass | ✅ | 102 tests |
-| 12 | Available builds tested | ⚠️ partly | CI: engine + CLI tests (incl. kill/resume e2e) green on Linux, macOS and Windows; desktop app compiles on all three. Linux `.deb` built and app used manually. macOS/Windows apps not yet launched or tested by hand |
+| 12 | Available builds tested | ⚠️ partly | CI: engine + CLI tests (incl. kill/resume e2e) green on Linux, macOS and Windows; desktop app compiles on all three. Linux `.deb` built and app used manually. macOS app (Apple Silicon) launched and used by hand for full imports, crash and resume, with a simulated exFAT card; physical card reader and unplug not yet tested. Windows app not yet launched by hand |
 | 13 | Errors understandable | ✅ | `user_message()`; UI shows them |
 | 14 | Offline operation demonstrated | ✅ Linux | full Rust suite incl. kill/resume e2e, and the release desktop app, run inside an empty network namespace (`unshare -n`); no network code anywhere |
 | 15 | Data stays local | ✅ | no network code, no telemetry |

@@ -5,6 +5,10 @@
 #   scripts/build-macos.sh                 # ad-hoc signed (local testing)
 #   SIGN_IDENTITY="Apple Development: …" TEAM_ID=ABCDE12345 scripts/build-macos.sh
 #   UNIVERSAL=1 scripts/build-macos.sh     # Apple Silicon + Intel in one app
+#   Release (Developer ID, notarized; see docs/MACOS_RELEASE.md):
+#   UNIVERSAL=1 NOTARIZE=1 SIGN_IDENTITY="Developer ID Application: …" \
+#     TEAM_ID=… APPLE_API_KEY=… APPLE_API_ISSUER=… APPLE_API_KEY_PATH=… \
+#     scripts/build-macos.sh
 #
 # Ad-hoc signing is enough for the app, the menu-bar icon, Dock progress and
 # notifications. macOS only shows widgets whose extension is signed with a
@@ -13,6 +17,9 @@ set -euo pipefail
 cd "$(dirname "$0")/.."
 ROOT=$PWD
 IDENTITY="${SIGN_IDENTITY:--}"
+# A Developer ID signature needs a secure timestamp to be notarized; an
+# ad-hoc signature ("-") cannot have one.
+if [[ "$IDENTITY" == "-" ]]; then TIMESTAMP=--timestamp=none; else TIMESTAMP=--timestamp; fi
 DMG="${DMG:-1}"
 UNIVERSAL="${UNIVERSAL:-0}"
 
@@ -45,10 +52,10 @@ mkdir -p "$APP/Contents/PlugIns"
 rm -rf "$APP/Contents/PlugIns/MediaFlowWidget.appex"
 cp -R "$APPEX" "$APP/Contents/PlugIns/"
 # Inner code first, then the app.
-codesign --force --options runtime --timestamp=none -s "$IDENTITY" \
+codesign --force --options runtime "$TIMESTAMP" -s "$IDENTITY" \
   --entitlements app/macos-widget/Widget/MediaFlowWidget.entitlements \
   "$APP/Contents/PlugIns/MediaFlowWidget.appex"
-codesign --force --options runtime --timestamp=none -s "$IDENTITY" "$APP"
+codesign --force --options runtime "$TIMESTAMP" -s "$IDENTITY" "$APP"
 codesign --verify --deep --strict "$APP"
 echo "Signed: $APP (identity: $IDENTITY)"
 
@@ -62,4 +69,19 @@ if [[ "$DMG" == "1" ]]; then
   hdiutil create -quiet -volname MediaFlow -srcfolder "$STAGE" -ov -format UDZO "$OUT"
   rm -rf "$STAGE"
   echo "DMG: $OUT"
+
+  # Notarization (Developer ID + App Store Connect API key). See
+  # docs/MACOS_RELEASE.md. Without it, Gatekeeper blocks downloaded builds.
+  if [[ "${NOTARIZE:-0}" == "1" ]]; then
+    : "${APPLE_API_KEY:?set APPLE_API_KEY (key id)}"
+    : "${APPLE_API_ISSUER:?set APPLE_API_ISSUER (issuer id)}"
+    : "${APPLE_API_KEY_PATH:?set APPLE_API_KEY_PATH (path to the .p8 file)}"
+    echo "==> Notarize"
+    codesign --force --timestamp -s "$IDENTITY" "$OUT"
+    xcrun notarytool submit "$OUT" --key "$APPLE_API_KEY_PATH" \
+      --key-id "$APPLE_API_KEY" --issuer "$APPLE_API_ISSUER" --wait
+    xcrun stapler staple "$OUT"
+    xcrun stapler validate "$OUT"
+    echo "Notarized: $OUT"
+  fi
 fi

@@ -31,6 +31,9 @@ follow SemVer.
 - The destination folder picker opens in the Movies/Videos folder instead
   of wherever the picker was last used (often the card itself).
 - The import preview opens on the files to copy rather than on all files.
+- `scripts/build-macos.sh` can notarize the DMG (`NOTARIZE=1`) and signs
+  with a secure timestamp when a Developer ID is given; procedure in
+  `docs/MACOS_RELEASE.md`.
 
 ### Fixed
 - CLI dates (`sessions`, `verify`) are shown in local time instead of UTC.
