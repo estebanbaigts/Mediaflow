@@ -23,6 +23,17 @@ follow SemVer.
 - Automated tests on Linux, macOS and Windows, including a kill-and-resume
   end-to-end test.
 
+### Changed
+- The CLI now uses the desktop app's library (`org.mediaflow.app` in the
+  platform data folder), so command-line imports appear in the app. An
+  earlier CLI library is left in place and pointed out once.
+- `mediaflow resume` accepts `--yes`, like `import`.
+
+### Fixed
+- CLI dates (`sessions`, `verify`) are shown in local time instead of UTC.
+- macOS: the startup disk is listed once, as `/`, and no longer as
+  read-only.
+
 ### Known limitations
 - The desktop app was used by hand on Linux only; macOS and Windows builds
   are tested in CI but not yet by hand. Builds are not signed by Apple or
