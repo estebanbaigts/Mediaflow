@@ -132,7 +132,9 @@ function TreePreview({ plan }: { plan: PlanView }) {
 }
 
 function PlanPreview({ plan }: { plan: PlanView }) {
-  const [filter, setFilter] = useState<Filter>("all");
+  // Open on what will actually be copied; "All" starts with excluded system
+  // files such as ._ companions, which hides the useful part of the plan.
+  const [filter, setFilter] = useState<Filter>(plan.summary.to_copy > 0 ? "copy" : "all");
   const [limit, setLimit] = useState(300);
   const s = plan.summary;
   const rows = plan.items.filter((it) => {

@@ -28,6 +28,9 @@ follow SemVer.
   platform data folder), so command-line imports appear in the app. An
   earlier CLI library is left in place and pointed out once.
 - `mediaflow resume` accepts `--yes`, like `import`.
+- The destination folder picker opens in the Movies/Videos folder instead
+  of wherever the picker was last used (often the card itself).
+- The import preview opens on the files to copy rather than on all files.
 
 ### Fixed
 - CLI dates (`sessions`, `verify`) are shown in local time instead of UTC.

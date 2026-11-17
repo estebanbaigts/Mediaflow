@@ -15,7 +15,7 @@ use mediaflow_core::state::SessionState;
 use mediaflow_core::volumes::{list_volumes as core_volumes, Volume};
 use mediaflow_core::{Control, Engine, MfError, PlanRequest, RunOptions, SessionInfo};
 use serde::{Deserialize, Serialize};
-use tauri::{AppHandle, Emitter, State};
+use tauri::{AppHandle, Emitter, Manager, State};
 use tauri_plugin_dialog::DialogExt;
 
 pub struct AppState {
@@ -125,10 +125,21 @@ pub async fn pick_folder(
     } else {
         "Choose a destination folder"
     };
+    // Start destinations in the user's Movies/Videos folder. Left alone, the
+    // picker reopens where it was last used, which is usually the card that
+    // was just chosen as the source.
+    let start_dir = (kind == GrantKind::Destination)
+        .then(|| app.path().video_dir().ok())
+        .flatten()
+        .filter(|d| d.is_dir());
     let picked = {
         let app = app.clone();
         tauri::async_runtime::spawn_blocking(move || {
-            app.dialog().file().set_title(title).blocking_pick_folder()
+            let mut dialog = app.dialog().file().set_title(title);
+            if let Some(dir) = start_dir {
+                dialog = dialog.set_directory(dir);
+            }
+            dialog.blocking_pick_folder()
         })
         .await
         .map_err(|e| ui("internal", e.to_string()))?
