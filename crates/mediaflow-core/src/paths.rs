@@ -204,17 +204,19 @@ pub fn create_dirs_within(root: &Path, target_dir: &Path) -> Result<()> {
 }
 
 pub fn is_link(md: &std::fs::Metadata) -> bool {
-    if md.file_type().is_symlink() {
-        return true;
-    }
-    #[cfg(windows)]
-    {
-        use std::os::windows::fs::MetadataExt;
-        const FILE_ATTRIBUTE_REPARSE_POINT: u32 = 0x400;
-        if md.file_attributes() & FILE_ATTRIBUTE_REPARSE_POINT != 0 {
-            return true;
-        }
-    }
+    md.file_type().is_symlink() || is_reparse_point(md)
+}
+
+/// Junctions and other reparse points are links too on Windows.
+#[cfg(windows)]
+fn is_reparse_point(md: &std::fs::Metadata) -> bool {
+    use std::os::windows::fs::MetadataExt;
+    const FILE_ATTRIBUTE_REPARSE_POINT: u32 = 0x400;
+    md.file_attributes() & FILE_ATTRIBUTE_REPARSE_POINT != 0
+}
+
+#[cfg(not(windows))]
+fn is_reparse_point(_md: &std::fs::Metadata) -> bool {
     false
 }
 

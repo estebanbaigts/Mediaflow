@@ -187,11 +187,11 @@ mod contract {
     use super::*;
 
     /// The same fixture is decoded by the Swift widget's tests
-    /// (app/macos-widget/StatusKit). Changing the format means bumping
+    /// (apps/macos-widget/StatusKit). Changing the format means bumping
     /// STATUS_VERSION and updating both sides.
     #[test]
     fn shared_fixture_matches_rust_model() {
-        let raw = include_str!("../../../app/macos-widget/Fixtures/status-v1.json");
+        let raw = include_str!("../../../apps/macos-widget/Fixtures/status-v1.json");
         let s: StatusSnapshot =
             serde_json::from_str(raw).expect("fixture must match StatusSnapshot");
         assert_eq!(s.version, STATUS_VERSION);

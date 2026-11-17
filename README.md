@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="app/assets/icon.png" width="96" alt="MediaFlow icon">
+<img src="apps/desktop/assets/icon.png" width="96" alt="MediaFlow icon">
 
 # MediaFlow
 
@@ -8,6 +8,8 @@
 
 Verified, organized backups of your cards, cameras, phones and drives —
 for macOS, Windows and Linux. Offline. No account. Never deletes your files.
+A free, open-source alternative to paid offload tools such as Hedge or
+ShotPut Pro.
 
 [**Download**](#download) · [Features](#what-it-does) · [User guide](docs/USER_GUIDE.md) · [Build from source](#build-from-source)
 
@@ -16,9 +18,9 @@ for macOS, Windows and Linux. Offline. No account. Never deletes your files.
 </div>
 
 > **Status: 0.1, pre-release.** The test suite passes on macOS, Windows and
-> Linux in CI and the installers build on all three. The app has only been
-> used by hand on Linux so far, and builds are not yet signed by Apple or
-> Microsoft. Please report anything odd — see [docs/ROADMAP.md](docs/ROADMAP.md).
+> Linux in CI and the installers build on all three. The app has been used
+> by hand on Linux and on macOS (with a simulated card, not yet a physical
+> card reader), and builds are not yet signed by Apple or Microsoft. Please report anything odd — see [docs/ROADMAP.md](docs/ROADMAP.md).
 
 ## What it does
 
@@ -107,7 +109,7 @@ You need [Rust](https://rustup.rs) 1.89+ and [Node.js](https://nodejs.org) 22.
 
 ```sh
 git clone https://github.com/estebanbaigts/Mediaflow-.git && cd Mediaflow-
-cd app && npm ci
+cd apps/desktop && npm ci
 npx tauri dev          # run the app in development
 npx tauri build        # installers in target/release/bundle/
 ```
@@ -120,13 +122,13 @@ npx tauri build        # installers in target/release/bundle/
 
 Command line only: `cargo build --release -p mediaflow-cli` → `target/release/mediaflow`.
 
-Tests: `cargo test --workspace --exclude mediaflow-app` and `cd app && npm test`.
+Tests: `cargo test --workspace --exclude mediaflow-app` and `cd apps/desktop && npm test`.
 
 ## Documentation
 
 - [User guide](docs/USER_GUIDE.md) · [Menu bar, notifications & widget](docs/WIDGET.md)
 - [Architecture](docs/ARCHITECTURE.md) · [Threat model](docs/THREAT_MODEL.md) · [Data-loss risks](docs/DATA_SAFETY.md)
-- [Test plan](docs/TEST_PLAN.md) · [Roadmap](docs/ROADMAP.md) · [Release checklist](docs/RELEASE_CHECKLIST.md)
+- [Test plan](docs/TEST_PLAN.md) · [Roadmap](docs/ROADMAP.md) · [Release checklist](docs/RELEASE_CHECKLIST.md) · [macOS signing](docs/MACOS_RELEASE.md)
 - [Contributing](CONTRIBUTING.md) · [Security policy](SECURITY.md) · [Changelog](CHANGELOG.md)
 
 ## License

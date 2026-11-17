@@ -40,14 +40,14 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: app
+        working-directory: apps/desktop
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version: 22
           cache: npm
-          cache-dependency-path: app/package-lock.json
+          cache-dependency-path: apps/desktop/package-lock.json
       - run: npm ci
       - run: npx tsc --noEmit
       - run: npm test
@@ -71,9 +71,9 @@ jobs:
       - if: runner.os == 'Linux'
         run: sudo apt-get update && sudo apt-get install -y libwebkit2gtk-4.1-dev libgtk-3-dev librsvg2-dev libayatana-appindicator3-dev rpm
       - run: npm ci
-        working-directory: app
+        working-directory: apps/desktop
       - run: npx tauri build --bundles ${{ matrix.bundles }}
-        working-directory: app
+        working-directory: apps/desktop
       - uses: actions/upload-artifact@v4
         with:
           name: MediaFlow-${{ matrix.name }}-unsigned
@@ -92,10 +92,10 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: StatusKit unit tests (shared JSON contract with Rust)
-        run: swift test --package-path app/macos-widget/StatusKit
+        run: swift test --package-path apps/macos-widget/StatusKit
       - run: brew install xcodegen
       - name: Build the widget extension (unsigned)
-        working-directory: app/macos-widget
+        working-directory: apps/macos-widget
         run: |
           xcodegen generate
           xcodebuild -project MediaFlowWidget.xcodeproj -scheme MediaFlowWidget \

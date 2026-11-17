@@ -23,6 +23,26 @@ follow SemVer.
 - Automated tests on Linux, macOS and Windows, including a kill-and-resume
   end-to-end test.
 
+### Changed
+- Repository layout: the desktop app moved from `app/` to `apps/desktop/`
+  and the macOS widget to `apps/macos-widget/`; layout and branch naming
+  are described in `CONTRIBUTING.md`.
+- The CLI now uses the desktop app's library (`org.mediaflow.app` in the
+  platform data folder), so command-line imports appear in the app. An
+  earlier CLI library is left in place and pointed out once.
+- `mediaflow resume` accepts `--yes`, like `import`.
+- The destination folder picker opens in the Movies/Videos folder instead
+  of wherever the picker was last used (often the card itself).
+- The import preview opens on the files to copy rather than on all files.
+- `scripts/build-macos.sh` can notarize the DMG (`NOTARIZE=1`) and signs
+  with a secure timestamp when a Developer ID is given; procedure in
+  `docs/MACOS_RELEASE.md`.
+
+### Fixed
+- CLI dates (`sessions`, `verify`) are shown in local time instead of UTC.
+- macOS: the startup disk is listed once, as `/`, and no longer as
+  read-only.
+
 ### Known limitations
 - The desktop app was used by hand on Linux only; macOS and Windows builds
   are tested in CI but not yet by hand. Builds are not signed by Apple or

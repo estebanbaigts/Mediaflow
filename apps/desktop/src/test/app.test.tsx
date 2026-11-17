@@ -113,6 +113,19 @@ describe("new import flow", () => {
     expect(screen.getByRole("button", { name: "Retry failed" })).toBeInTheDocument();
   });
 
+  it("opens the preview on the files that will be copied", async () => {
+    const user = userEvent.setup();
+    await goToImport(user);
+    await user.click(screen.getByRole("button", { name: /Choose a card or folder/ }));
+    await user.click(screen.getByRole("button", { name: "Continue" }));
+    await user.click(screen.getByRole("button", { name: /Add a destination folder/ }));
+    await waitFor(() => expect(screen.getByRole("button", { name: "Analyze" })).toBeEnabled());
+    await user.click(screen.getByRole("button", { name: "Analyze" }));
+
+    expect(await screen.findByRole("tab", { name: /To copy/ })).toHaveAttribute("aria-selected", "true");
+    expect(screen.queryByText(/macOS folder metadata/)).not.toBeInTheDocument();
+  });
+
   it("blocks the start when a destination lacks space", async () => {
     onInvoke("create_plan", () =>
       plan({

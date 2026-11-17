@@ -39,7 +39,35 @@ pub fn list_volumes() -> Vec<Volume> {
         .collect();
     out.sort_by(|a, b| a.mount_point.cmp(&b.mount_point));
     out.dedup_by(|a, b| a.mount_point == b.mount_point);
+    if cfg!(target_os = "macos") {
+        out = collapse_macos_system_volumes(out);
+    }
     out
+}
+
+/// On macOS the startup disk shows up twice: `/` is the sealed, read-only
+/// system snapshot and `/System/Volumes/Data` holds the user's files (joined
+/// to `/` by firmlinks), with the same free space. Other `/System/Volumes/*`
+/// mounts (Preboot, VM, Update…) are internal. Keep a single `/` entry and
+/// report it writable when a Data volume exists, since that is where files
+/// under `/Users` actually live.
+fn collapse_macos_system_volumes(volumes: Vec<Volume>) -> Vec<Volume> {
+    let data_writable = volumes
+        .iter()
+        .find(|v| v.mount_point == "/System/Volumes/Data")
+        .map(|v| !v.read_only);
+    volumes
+        .into_iter()
+        .filter(|v| !v.mount_point.starts_with("/System/Volumes/"))
+        .map(|mut v| {
+            if v.mount_point == "/" {
+                if let Some(writable) = data_writable {
+                    v.read_only = !writable;
+                }
+            }
+            v
+        })
+        .collect()
 }
 
 /// Free space for the volume holding `path`.
@@ -166,5 +194,37 @@ mod tests {
         for id in ["", "/Volumes/CARD", "../../etc", "CARD"] {
             assert!(r.get(id).is_none(), "{id:?}");
         }
+    }
+
+    fn system_vol(mount: &str, read_only: bool) -> Volume {
+        Volume {
+            name: "Macintosh HD".into(),
+            mount_point: mount.into(),
+            file_system: "apfs".into(),
+            total_bytes: 494_000_000_000,
+            available_bytes: 48_000_000_000,
+            removable: false,
+            read_only,
+        }
+    }
+
+    #[test]
+    fn macos_startup_disk_is_listed_once_and_writable() {
+        let out = collapse_macos_system_volumes(vec![
+            system_vol("/", true),
+            system_vol("/System/Volumes/Data", false),
+            system_vol("/System/Volumes/Preboot", false),
+            vol("/Volumes/A7S3", true),
+        ]);
+        let mounts: Vec<_> = out.iter().map(|v| v.mount_point.as_str()).collect();
+        assert_eq!(mounts, ["/", "/Volumes/A7S3"]);
+        assert!(!out[0].read_only);
+    }
+
+    #[test]
+    fn root_stays_read_only_without_a_data_volume() {
+        let out = collapse_macos_system_volumes(vec![system_vol("/", true)]);
+        assert_eq!(out.len(), 1);
+        assert!(out[0].read_only);
     }
 }

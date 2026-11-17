@@ -55,6 +55,10 @@ enum Cmd {
     /// Resume a paused, interrupted or partially failed import.
     Resume {
         session: String,
+        /// Accepted so scripts can pass the same flag as `import`; resume
+        /// never asks for confirmation.
+        #[arg(long, short)]
+        yes: bool,
         #[arg(long, hide = true)]
         debug_throttle_ms: Option<u64>,
     },
@@ -123,11 +127,48 @@ enum Format {
     Csv,
 }
 
+/// Must match `identifier` in apps/desktop/src-tauri/tauri.conf.json: the desktop app
+/// keeps its library in Tauri's `app_data_dir()`, which is the platform data
+/// folder joined with this identifier. Sharing it means imports made from
+/// the command line show up in the app and count as verified copies there.
+const APP_IDENTIFIER: &str = "org.mediaflow.app";
+
 fn default_library() -> PathBuf {
-    dirs::data_local_dir()
+    dirs::data_dir()
         .unwrap_or_else(|| PathBuf::from("."))
-        .join("MediaFlow")
+        .join(APP_IDENTIFIER)
         .join("library.sqlite")
+}
+
+/// Where versions before the shared library kept the CLI's own database.
+fn legacy_cli_library() -> Option<PathBuf> {
+    Some(
+        dirs::data_local_dir()?
+            .join("MediaFlow")
+            .join("library.sqlite"),
+    )
+}
+
+/// The old CLI database is never moved or deleted automatically; point the
+/// user at it once, while the shared library does not exist yet.
+fn warn_about_legacy_library(shared: &Path) {
+    if shared.exists() {
+        return;
+    }
+    if let Some(old) = legacy_cli_library().filter(|p| p.exists()) {
+        eprintln!(
+            "note: the command line now shares the desktop app's library at {}.\n      \
+             Your earlier command-line history is still in {}; use --library to open it.",
+            shared.display(),
+            old.display()
+        );
+    }
+}
+
+fn local_time(t: chrono::DateTime<chrono::Utc>) -> String {
+    t.with_timezone(&chrono::Local)
+        .format("%Y-%m-%d %H:%M")
+        .to_string()
 }
 
 fn main() -> ExitCode {
@@ -182,7 +223,15 @@ fn real_main(cli: Cli) -> mediaflow_core::Result<ExitCode> {
         }
         _ => {}
     }
-    let engine = Engine::open(&cli.library.clone().unwrap_or_else(default_library))?;
+    let library = match cli.library.clone() {
+        Some(path) => path,
+        None => {
+            let shared = default_library();
+            warn_about_legacy_library(&shared);
+            shared
+        }
+    };
+    let engine = Engine::open(&library)?;
     match cli.cmd {
         Cmd::Volumes | Cmd::Profiles => unreachable!(),
         Cmd::Scan { source } => {
@@ -248,6 +297,7 @@ fn real_main(cli: Cli) -> mediaflow_core::Result<ExitCode> {
         }
         Cmd::Resume {
             session,
+            yes: _,
             debug_throttle_ms,
         } => run(&engine, &session, debug_throttle_ms),
         Cmd::Cancel { session } => {
@@ -259,7 +309,7 @@ fn real_main(cli: Cli) -> mediaflow_core::Result<ExitCode> {
             for s in engine.sessions(limit)? {
                 println!(
                     "{}  {:<22} {:<18} {} → {}  done {} · skipped {} · failed {} · conflicts {} · pending {}",
-                    s.created_at.format("%Y-%m-%d %H:%M"),
+                    local_time(s.created_at),
                     s.state.as_str(),
                     if s.project.is_empty() { "-" } else { &s.project },
                     s.source_label,
@@ -366,10 +416,7 @@ fn real_main(cli: Cli) -> mediaflow_core::Result<ExitCode> {
                     );
                 }
                 if let Some(t) = r.previous_check_at {
-                    println!(
-                        "\nPrevious check of this source: {}",
-                        t.format("%Y-%m-%d %H:%M")
-                    );
+                    println!("\nPrevious check of this source: {}", local_time(t));
                 }
             }
             Ok(if r.destinations.iter().all(|d| d.complete) {

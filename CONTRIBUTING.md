@@ -15,12 +15,35 @@ the bar for correctness is high.
 5. Errors are shown to users through `MfError::user_message()` — write them
    for someone who is not technical.
 
+## Repository layout
+
+```
+crates/
+  mediaflow-core/     engine: scan, plan, verified copy, journal, compare
+  mediaflow-cli/      `mediaflow` command-line tool
+apps/
+  desktop/            Tauri 2 shell (src-tauri/) and React UI (src/)
+  macos-widget/       WidgetKit extension and its StatusKit Swift package
+docs/                 architecture, threat model, guides, release procedures
+scripts/              build and packaging scripts
+.github/workflows/    CI and release
+```
+
+Rust code shared by the CLI and the app lives in `mediaflow-core`; the apps
+only wire it to a user interface.
+
+## Branches
+
+`main` is always releasable. Work happens on short-lived branches named
+`<type>/<topic>` (`feat/`, `fix/`, `docs/`, `chore/`, `ci/`), merged through
+a pull request once CI is green.
+
 ## Workflow
 
 ```sh
 cargo fmt --all && cargo clippy --all-targets -- -D warnings
 cargo test --workspace --exclude mediaflow-app
-cd app && npm ci && npx tsc --noEmit && npm test
+cd apps/desktop && npm ci && npx tsc --noEmit && npm test
 ```
 
 - Tests that create or damage files must use `tempfile` directories and
@@ -30,8 +53,8 @@ cd app && npm ci && npx tsc --noEmit && npm test
   existing one.
 - New dependencies: explain why in the PR, check licence (MIT/Apache/BSD
   compatible) and maintenance.
-- New Tauri command: add it to `app/src-tauri/build.rs`, the capability file,
-  and take ids, not paths.
+- New Tauri command: add it to `apps/desktop/src-tauri/build.rs` and the
+  capability file, and take ids, not paths.
 
 ## Commit messages
 

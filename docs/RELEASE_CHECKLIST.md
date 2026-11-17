@@ -5,7 +5,7 @@ than ticking something that was not actually run.
 
 ## Build & test, per OS (macOS arm64, macOS x86-64, Windows x86-64, Linux x86-64)
 - [ ] `cargo test --workspace --exclude mediaflow-app` green
-- [ ] `cd app && npm ci && npm test && npx tsc --noEmit` green
+- [ ] `cd apps/desktop && npm ci && npm test && npx tsc --noEmit` green
 - [ ] `npx tauri build` produces a bundle; the app launches
 - [ ] Manual import from a real card reader: plan, copy, verify, report
 - [ ] Physical unplug of the destination mid-import → Interrupted → Resume → Completed
@@ -19,7 +19,7 @@ than ticking something that was not actually run.
 - [ ] `npm audit --omit=dev` clean
 - [ ] Capability file still lists only the intended commands; no plugin permission added for the web view
 - [ ] CSP unchanged or reviewed
-- [ ] macOS build signed and notarized; Windows installer signed
+- [ ] macOS build universal, signed and notarized ([procedure](MACOS_RELEASE.md)); Windows installer signed
 - [ ] SHA-256 checksums of release artifacts published
 
 ## Publishing
