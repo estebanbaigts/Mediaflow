@@ -67,20 +67,21 @@ fn placeholder_rename(from: &Path, to: &Path) -> io::Result<()> {
 }
 
 fn is_unsupported(e: &io::Error) -> bool {
-    if e.kind() == io::ErrorKind::Unsupported {
-        return true;
-    }
-    #[cfg(unix)]
-    {
-        matches!(
-            e.raw_os_error(),
-            Some(libc::EINVAL) | Some(libc::ENOSYS) | Some(libc::ENOTSUP)
-        )
-    }
-    #[cfg(not(unix))]
-    {
-        false
-    }
+    e.kind() == io::ErrorKind::Unsupported || is_unsupported_os_error(e)
+}
+
+/// File systems that lack the native no-replace rename report it with these.
+#[cfg(unix)]
+fn is_unsupported_os_error(e: &io::Error) -> bool {
+    matches!(
+        e.raw_os_error(),
+        Some(libc::EINVAL) | Some(libc::ENOSYS) | Some(libc::ENOTSUP)
+    )
+}
+
+#[cfg(not(unix))]
+fn is_unsupported_os_error(_e: &io::Error) -> bool {
+    false
 }
 
 #[cfg(any(target_os = "linux", target_os = "android"))]
